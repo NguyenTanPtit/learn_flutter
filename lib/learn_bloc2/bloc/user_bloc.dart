@@ -4,25 +4,26 @@ import 'package:learn_flutter/learn_bloc2/bloc/user_state.dart';
 
 import '../repository/user_repository.dart';
 
-class UserBloc extends Bloc<UserEvent, UserState>{
+class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository repository;
 
-  UserBloc(this.repository): super(UserInitialState()){
-    on<FetchUserEvent>((event,emit){
-      _onFetchUserEvent(event, emit);
+  UserBloc(this.repository) : super(UserInitialState()) {
+    on<FetchUserEvent>((event, emit) async {
+      await _onFetchUserEvent(event, emit);
     });
 
-    on<RefreshUserEvent>((event,emit){
-      _onFetchUserEvent(event, emit);
+    on<RefreshUserEvent>((event, emit) async {
+      await _onFetchUserEvent(event, emit);
     });
   }
 
-  Future<void> _onFetchUserEvent(UserEvent event, Emitter<UserState> emit) async {
+  Future<void> _onFetchUserEvent(
+      UserEvent event, Emitter<UserState> emit) async {
     emit(UserLoadingState());
-    try{
-      final users = await repository.fetchUser().whenComplete(() => emit(UserLoadedState(users)));
+    try {
+      final users = await repository.fetchUser();
       emit(UserLoadedState(users));
-    }catch(e){
+    } catch (e) {
       emit(UserErrorState(e.toString()));
     }
   }
